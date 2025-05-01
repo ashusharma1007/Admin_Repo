@@ -9,6 +9,7 @@ import UserDashboard from './components/Dashboard/UserDashboard';
 import UserList from './components/UserManagement/UserList';
 import RequireAuth from './components/Auth/RequireAuth';
 import AuditLogsPage from './components/Dashboard/AuditLogsPage.js'
+import ReportsPage from './components/Dashboard/ReportsPage.js'
 
 function App() {
   // Dashboard component based on user role
@@ -38,14 +39,14 @@ function App() {
               </RequireAuth>
             } 
           />
-          <Route 
-            path="/reports" 
-            element={
-              <RequireAuth allowedRoles={['admin', 'superadmin']}>
-                <div>Reports Page</div>
-              </RequireAuth>
-            } 
-          />
+      <Route 
+  path="/reports" 
+  element={
+    <RequireAuth allowedRoles={['superadmin', 'admin', 'user']}>
+      <ReportsPage />
+    </RequireAuth>
+  } 
+/>
 
           {/* <Route 
             path="/audit" 
