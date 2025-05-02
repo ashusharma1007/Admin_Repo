@@ -70,7 +70,7 @@ const assembliesByDistrict = {
     { value: 'Narasimharaja', label: 'Narasimharaja' }
   ],
   'PATNA': [
-    { value: '184 - Patna Sahib', label: '184 - Patna Sahib' },
+    { value: 'पटना साहिब', label: 'पटना साहिब' },
     { value: '185 - Kumhrar', label: '185 - Kumhrar' },
     { value: '186 - Bankipur', label: '186 - Bankipur' }
   ],

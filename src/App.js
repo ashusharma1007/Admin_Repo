@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import SecurityProvider from './components/Dashboard/SecurityProvider'; // Import the SecurityProvider
 import Login from './components/Auth/Login';
 import DashboardLayout from './components/Dashboard/DashboardLayout';
 import SuperAdminDashboard from './components/Dashboard/SuperAdminDashboard';
@@ -39,23 +40,14 @@ function App() {
               </RequireAuth>
             } 
           />
-      <Route 
-  path="/reports" 
-  element={
-    <RequireAuth allowedRoles={['superadmin', 'admin', 'user']}>
-      <ReportsPage />
-    </RequireAuth>
-  } 
-/>
-
-          {/* <Route 
-            path="/audit" 
+          <Route 
+            path="/reports" 
             element={
-              <RequireAuth allowedRoles={['superadmin']}>
-                <div>Audit Logs Page</div>
+              <RequireAuth allowedRoles={['superadmin', 'admin', 'user']}>
+                <ReportsPage />
               </RequireAuth>
             } 
-          /> */}
+          />
           <Route 
             path="/profile" 
             element={
@@ -105,16 +97,19 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={
-            <DashboardLayout>
-              <DashboardByRole />
-            </DashboardLayout>
-          } />
-        </Routes>
-      </Router>
+      {/* Wrap the entire application with SecurityProvider */}
+      <SecurityProvider enableWatermark={false}>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={
+              <DashboardLayout>
+                <DashboardByRole />
+              </DashboardLayout>
+            } />
+          </Routes>
+        </Router>
+      </SecurityProvider>
     </AuthProvider>
   );
 }
