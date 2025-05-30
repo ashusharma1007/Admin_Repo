@@ -22,7 +22,9 @@ import {
   Security as SecurityIcon,
   Gavel as GavelIcon,
   PersonAdd as PersonAddIcon,
-  AccountCircle as AccountCircleIcon
+  AccountCircle as AccountCircleIcon,
+  VerifiedUser as VerifiedUserIcon,
+  Upload
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -37,11 +39,70 @@ const Sidebar = ({ open, handleDrawerClose, drawerWidth = 240 }) => {
   const isAdmin = currentUser?.role === 'admin' || isSuperAdmin;
   
   const handleNavigate = (path) => {
+    console.log('🔗 Navigating to:', path);
     navigate(path);
-    if (theme.breakpoints.down('md')) {
+    
+    // Close drawer on mobile after navigation
+    if (window.innerWidth < 900 && handleDrawerClose) {
       handleDrawerClose();
     }
   };
+
+  // Navigation items configuration
+  const navigationItems = [
+    {
+      label: 'Dashboard',
+      path: '/',
+      icon: <DashboardIcon />,
+      show: true
+    },
+    {
+      label: 'User Management',
+      path: '/users',
+      icon: <PeopleIcon />,
+      show: isAdmin
+    },
+
+    {
+      label: 'Upload Docs',
+      path: '/audit-logs',
+      icon: <Upload />,
+      show: isAdmin
+    },
+    {
+      label: 'User Verification',
+      path: '/user-verification',
+      icon: <VerifiedUserIcon />,
+      show: isAdmin
+    },
+    {
+      label: 'Reports',
+      path: '/reports',
+      icon: <BarChartIcon />,
+      show: true
+    },
+    {
+      label: 'Audit Logs',
+      path: '/audit',
+      icon: <GavelIcon />,
+      show: isSuperAdmin
+    }
+  ];
+
+  const personalItems = [
+    {
+      label: 'My Profile',
+      path: '/profile',
+      icon: <AccountCircleIcon />,
+      show: true
+    },
+    {
+      label: 'Settings',
+      path: '/settings',
+      icon: <SettingsIcon />,
+      show: true
+    }
+  ];
   
   return (
     <Drawer
@@ -84,183 +145,71 @@ const Sidebar = ({ open, handleDrawerClose, drawerWidth = 240 }) => {
           </Typography>
         )}
       </Toolbar>
+      
       <Divider />
+      
+      {/* Main Navigation */}
       <List component="nav">
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5,
-              bgcolor: location.pathname === '/' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-            }}
-            onClick={() => handleNavigate('/')}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center',
-                color: location.pathname === '/' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        
-        {isAdmin && (
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-                bgcolor: location.pathname === '/users' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-              }}
-              onClick={() => handleNavigate('/users')}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                  color: location.pathname === '/users' ? 'primary.main' : 'inherit',
-                }}
-              >
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-        )}
-        
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5,
-              bgcolor: location.pathname === '/reports' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-            }}
-            onClick={() => handleNavigate('/reports')}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center',
-                color: location.pathname === '/reports' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <BarChartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Reports" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        
-        {isSuperAdmin && (
-          <>
-            <ListItem disablePadding sx={{ display: 'block' }}>
+        {navigationItems.map((item) => 
+          item.show ? (
+            <ListItem key={item.path} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
-                  bgcolor: location.pathname === '/admins' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                  bgcolor: location.pathname === item.path ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                 }}
-                onClick={() => handleNavigate('/admins')}
+                onClick={() => handleNavigate(item.path)}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
-                    color: location.pathname === '/admins' ? 'primary.main' : 'inherit',
+                    color: location.pathname === item.path ? 'primary.main' : 'inherit',
                   }}
                 >
-                  <SupervisorAccountIcon />
+                  {item.icon}
                 </ListItemIcon>
-                <ListItemText primary="Admin Management" sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
-            
-            <ListItem disablePadding sx={{ display: 'block' }}>
+          ) : null
+        )}
+      </List>
+      
+      <Divider sx={{ my: 1 }} />
+      
+      {/* Personal Items */}
+      <List component="nav">
+        {personalItems.map((item) => 
+          item.show ? (
+            <ListItem key={item.path} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
-                  bgcolor: location.pathname === '/audit' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                  bgcolor: location.pathname === item.path ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                 }}
-                onClick={() => handleNavigate('/audit')}
+                onClick={() => handleNavigate(item.path)}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
-                    color: location.pathname === '/audit' ? 'primary.main' : 'inherit',
+                    color: location.pathname === item.path ? 'primary.main' : 'inherit',
                   }}
                 >
-                  <GavelIcon />
+                  {item.icon}
                 </ListItemIcon>
-                <ListItemText primary="Audit Logs" sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
-          </>
+          ) : null
         )}
-        
-        <Divider sx={{ my: 1 }} />
-        
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5,
-              bgcolor: location.pathname === '/profile' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-            }}
-            onClick={() => handleNavigate('/profile')}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center',
-                color: location.pathname === '/profile' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="My Profile" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
-        
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5,
-              bgcolor: location.pathname === '/settings' ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-            }}
-            onClick={() => handleNavigate('/settings')}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center',
-                color: location.pathname === '/settings' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Settings" sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
       </List>
     </Drawer>
   );

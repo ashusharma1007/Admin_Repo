@@ -17,7 +17,8 @@ import {
   PersonAdd as PersonAddIcon,
   History as HistoryIcon,
   AccessTime as AccessTimeIcon,
-  Assignment as AssignmentIcon
+  Assignment as AssignmentIcon,
+  VerifiedUser as VerifiedUserIcon
 } from '@mui/icons-material';
 import StatsCard from '../UI/StatsCard';
 import ActionCard from '../UI/ActionCard';
@@ -142,8 +143,13 @@ const AdminDashboard = () => {
               <Typography variant="h6">
                 Pending Approvals
               </Typography>
-              <Button variant="outlined" size="small">
-                View All
+              <Button 
+                variant="outlined" 
+                size="small"
+                onClick={() => navigate('/user-verification')}
+                startIcon={<VerifiedUserIcon />}
+              >
+                Go to User Verification
               </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
@@ -180,7 +186,7 @@ const AdminDashboard = () => {
         </Grid>
         
         {/* Action Cards */}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={4}>
           <ActionCard
             title="User Management"
             description="Add, edit, or remove user accounts. Manage permissions and roles."
@@ -189,7 +195,16 @@ const AdminDashboard = () => {
           />
         </Grid>
         
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={4}>
+          <ActionCard
+            title="User Verification"
+            description="Review and verify user accounts. Approve or disapprove user registrations."
+            action="Verify Users"
+            onClick={() => navigate('/user-verification')}
+          />
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={4}>
           <ActionCard
             title="View Reports"
             description="Access analytical reports and insights on user activities and system usage."

@@ -10,7 +10,8 @@ import {
   Alert,
   InputAdornment,
   IconButton,
-  Paper
+  Paper,
+  CircularProgress
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Visibility, VisibilityOff, LockOutlined, EmailOutlined } from '@mui/icons-material';
@@ -41,20 +42,36 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const user = login(email, password);
+      const user = await login(email, password);
       
       if (user) {
         // Successful login
         navigate(from, { replace: true });
-      } else {
-        setError('Invalid email or password');
       }
     } catch (err) {
-      setError('Failed to login. Please try again.');
-      console.error(err);
+      setError(err.message || 'Invalid email or password. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleDemoLogin = async (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+    setIsLoading(true);
     
-    setIsLoading(false);
+    try {
+      const user = await login(demoEmail, demoPassword);
+      if (user) {
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      setError(err.message || 'Demo login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -105,6 +122,7 @@ const Login = () => {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -124,6 +142,7 @@ const Login = () => {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -136,6 +155,7 @@ const Login = () => {
                       aria-label="toggle password visibility"
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
+                      disabled={isLoading}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -150,21 +170,42 @@ const Login = () => {
               sx={{ mt: 3, mb: 2, py: 1.5 }}
               disabled={isLoading}
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? (
+                <>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </Button>
             
             <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Demo credentials:
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Demo Login (Click to use):
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Super Admin: super@admin.com / superadmin123
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Admin: admin@example.com / admin123
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                User: user@example.com / user123
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleDemoLogin('admin@example.com', 'admin123')}
+                  disabled={isLoading}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Admin Login
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleDemoLogin('superadmin@example.com', 'superadmin123')}
+                  disabled={isLoading}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Super Admin Login
+                </Button>
+              </Box>
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+                Note: Use actual credentials from your system, or these demo credentials if configured.
               </Typography>
             </Box>
           </Box>
